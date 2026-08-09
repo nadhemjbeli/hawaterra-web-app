@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+/*
+ * Palette computed against dataviz-skill checks (validate_palette.js), not
+ * eyeballed — every background/text pair below was run through the
+ * validator's ordinal-ramp checks or a direct WCAG contrast() check.
+ * - lifecycle-* is a 5-step ordinal ramp (one hue, monotone lightness) for
+ *   the cutting -> rooting -> growing -> flowering -> fruiting progression.
+ *   Each step ships its own *-text token because a single ramp can't have
+ *   one text color clear 4.5:1 across its full light->dark range.
+ * - status-* are fixed, mode-invariant state colors (never themed) — their
+ *   paired text token is a plain literal for the same reason.
+ * See the plants list page for how these map to plant.status values.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f2ede0;
+  --surface: #faf7f2;
+  --ink: #241f16;
+  --ink-muted: #6b6558;
+  --brand: #356b1e;
+  --brand-foreground: #ffffff;
+  --accent: #c1592f;
+  --border: rgba(36, 31, 22, 0.12);
+  --error-text: #a5271f;
+  --success-text: #0a7a09;
+
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --status-text-on-light: #241f16;
+  --status-text-on-dark: #ffffff;
+
+  --neutral-muted: #655f52;
+  --neutral-muted-text: #ffffff;
+
+  --lifecycle-1: #8fb968;
+  --lifecycle-1-text: #241f16;
+  --lifecycle-2: #4a7529;
+  --lifecycle-2-text: #ffffff;
+  --lifecycle-3: #345c1f;
+  --lifecycle-3-text: #ffffff;
+  --lifecycle-4: #1f4514;
+  --lifecycle-4-text: #ffffff;
+  --lifecycle-5: #0f2a08;
+  --lifecycle-5-text: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-error: var(--error-text);
+  --color-success: var(--success-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #100e0b;
+    --surface: #171511;
+    --ink: #f3efe6;
+    --ink-muted: #b8b2a3;
+    --accent: #e08256;
+    --border: rgba(243, 239, 230, 0.12);
+    --error-text: #f28b82;
+    --success-text: #0ca30c;
+
+    --neutral-muted: #a39c8c;
+    --neutral-muted-text: #171511;
+
+    --lifecycle-1: #b0da8f;
+    --lifecycle-1-text: #171511;
+    --lifecycle-2: #8ec46c;
+    --lifecycle-2-text: #171511;
+    --lifecycle-3: #6ba845;
+    --lifecycle-3-text: #171511;
+    --lifecycle-4: #3d701f;
+    --lifecycle-4-text: #ffffff;
+    --lifecycle-5: #2c5817;
+    --lifecycle-5-text: #ffffff;
   }
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
 }
