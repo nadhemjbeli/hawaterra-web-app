@@ -6,6 +6,7 @@ import { StatTile } from "@/components/ui/stat-tile";
 import { StatusChart } from "@/components/status-chart";
 import { PlantList } from "./plant-list";
 import { SpeciesList } from "./species-list";
+import { FarmWeatherSection } from "@/components/weather/farm-weather-section";
 
 export default async function PlantsPage(props: PageProps<"/plants">) {
   await requireAuthedUser();
@@ -112,6 +113,8 @@ export default async function PlantsPage(props: PageProps<"/plants">) {
         plants &&
         plants.length > 0 && (
           <>
+            <FarmWeatherSection />
+
             <div className="flex gap-3">
               <StatTile label="Plants" value={plants.length} />
               <StatTile

@@ -36,3 +36,6 @@ export type ObservationType = (typeof OBSERVATION_TYPES)[number];
 // Sentinel value for the "+ Add new species" option in the species select —
 // shared between the client form and the server action so both agree on it.
 export const NEW_SPECIES_OPTION_VALUE = "__new__";
+
+// Same idea for the "+ Add new cultivar" option in the cultivar select.
+export const NEW_CULTIVAR_OPTION_VALUE = "__new__";

@@ -4,7 +4,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAuthedUser, createClient } from "@/lib/supabase/server";
-import { PLANT_STATUSES, NEW_SPECIES_OPTION_VALUE } from "@/lib/constants";
+import {
+  PLANT_STATUSES,
+  NEW_SPECIES_OPTION_VALUE,
+  NEW_CULTIVAR_OPTION_VALUE,
+} from "@/lib/constants";
 import type { Database } from "@/lib/database.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -13,6 +17,7 @@ const plantInputSchema = z.object({
   species_id: z.string().trim().min(1, "Choose a species."),
   new_species_name: z.string().trim().default(""),
   cultivar_id: z.string().trim(),
+  new_cultivar_name: z.string().trim().default(""),
   source: z.string().trim(),
   acquired_at: z.string().trim(),
   planted_at: z.string().trim(),
@@ -70,9 +75,51 @@ async function resolveSpeciesId(
   return { speciesId: created.id };
 }
 
+// Same idea for cultivar, but scoped to the (already-resolved) species — a
+// new cultivar is always created against that specific species, matching
+// the plant.cultivar_id/species_id composite FK.
+async function resolveCultivarId(
+  supabase: SupabaseClient<Database>,
+  cultivar_id: string,
+  new_cultivar_name: string,
+  speciesId: string,
+): Promise<{ cultivarId: string | null } | { error: string }> {
+  if (cultivar_id !== NEW_CULTIVAR_OPTION_VALUE) {
+    return { cultivarId: nullable(cultivar_id) };
+  }
+
+  if (!new_cultivar_name) {
+    return { error: "Enter a name for the new cultivar." };
+  }
+
+  const { data: existing } = await supabase
+    .from("cultivar")
+    .select("id")
+    .eq("species_id", speciesId)
+    .ilike("name", new_cultivar_name)
+    .maybeSingle();
+
+  if (existing) {
+    return { cultivarId: existing.id };
+  }
+
+  const { data: created, error } = await supabase
+    .from("cultivar")
+    .insert({ species_id: speciesId, name: new_cultivar_name })
+    .select("id")
+    .single();
+
+  if (error || !created) {
+    return { error: "Could not create the new cultivar. Please try again." };
+  }
+
+  return { cultivarId: created.id };
+}
+
 function toPlantRow(
   parsed: z.infer<typeof plantInputSchema>,
   speciesId: string,
+  cultivarId: string | null,
 ): { row: Omit<PlantRow, "user_id"> } | { error: string } {
   let containerLiters: number | null = null;
   if (parsed.container_liters !== "") {
@@ -87,7 +134,7 @@ function toPlantRow(
     row: {
       code: parsed.code,
       species_id: speciesId,
-      cultivar_id: nullable(parsed.cultivar_id),
+      cultivar_id: cultivarId,
       source: nullable(parsed.source),
       acquired_at: nullable(parsed.acquired_at),
       planted_at: nullable(parsed.planted_at),
@@ -128,7 +175,21 @@ export async function createPlant(
     return { error: speciesResult.error };
   }
 
-  const result = toPlantRow(parsed.data, speciesResult.speciesId);
+  const cultivarResult = await resolveCultivarId(
+    supabase,
+    parsed.data.cultivar_id,
+    parsed.data.new_cultivar_name,
+    speciesResult.speciesId,
+  );
+  if ("error" in cultivarResult) {
+    return { error: cultivarResult.error };
+  }
+
+  const result = toPlantRow(
+    parsed.data,
+    speciesResult.speciesId,
+    cultivarResult.cultivarId,
+  );
   if ("error" in result) {
     return { error: result.error };
   }
@@ -169,7 +230,21 @@ export async function updatePlant(
     return { error: speciesResult.error };
   }
 
-  const result = toPlantRow(parsed.data, speciesResult.speciesId);
+  const cultivarResult = await resolveCultivarId(
+    supabase,
+    parsed.data.cultivar_id,
+    parsed.data.new_cultivar_name,
+    speciesResult.speciesId,
+  );
+  if ("error" in cultivarResult) {
+    return { error: cultivarResult.error };
+  }
+
+  const result = toPlantRow(
+    parsed.data,
+    speciesResult.speciesId,
+    cultivarResult.cultivarId,
+  );
   if ("error" in result) {
     return { error: result.error };
   }

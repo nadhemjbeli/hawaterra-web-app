@@ -1,7 +1,11 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { PLANT_STATUSES, NEW_SPECIES_OPTION_VALUE } from "@/lib/constants";
+import {
+  PLANT_STATUSES,
+  NEW_SPECIES_OPTION_VALUE,
+  NEW_CULTIVAR_OPTION_VALUE,
+} from "@/lib/constants";
 import type { PlantFormState } from "@/app/plants/actions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -71,9 +75,21 @@ export function PlantForm({
   );
   const isNewSpecies = speciesId === NEW_SPECIES_OPTION_VALUE;
 
+  const [cultivarId, setCultivarId] = useState(
+    defaultValues?.cultivar_id ?? emptyValues.cultivar_id,
+  );
+  const isNewCultivar = cultivarId === NEW_CULTIVAR_OPTION_VALUE;
+
   const availableCultivars = cultivarList.filter(
     (c) => c.species_id === speciesId,
   );
+
+  function handleSpeciesChange(value: string) {
+    setSpeciesId(value);
+    // A cultivar picked for the previous species (or "new cultivar" typed
+    // against it) doesn't necessarily apply to the new one.
+    setCultivarId(emptyValues.cultivar_id);
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -97,7 +113,7 @@ export function PlantForm({
           name="species_id"
           required
           value={speciesId}
-          onChange={(e) => setSpeciesId(e.target.value)}
+          onChange={(e) => handleSpeciesChange(e.target.value)}
           className={fieldSelectClassName}
         >
           <option value="" disabled>
@@ -132,7 +148,8 @@ export function PlantForm({
         <select
           id="cultivar_id"
           name="cultivar_id"
-          defaultValue={defaultValues?.cultivar_id ?? emptyValues.cultivar_id}
+          value={cultivarId}
+          onChange={(e) => setCultivarId(e.target.value)}
           disabled={!speciesId}
           className={fieldSelectClassName}
         >
@@ -142,8 +159,30 @@ export function PlantForm({
               {c.name}
             </option>
           ))}
+          {speciesId && (
+            <option value={NEW_CULTIVAR_OPTION_VALUE}>
+              + Add new cultivar…
+            </option>
+          )}
         </select>
       </FieldGroup>
+
+      {isNewCultivar && (
+        <FieldGroup>
+          <FieldLabel htmlFor="new_cultivar_name">
+            New cultivar name
+          </FieldLabel>
+          <input
+            id="new_cultivar_name"
+            name="new_cultivar_name"
+            type="text"
+            required
+            autoFocus
+            placeholder="e.g. Royal Red"
+            className={fieldInputClassName}
+          />
+        </FieldGroup>
+      )}
 
       <FieldGroup>
         <FieldLabel htmlFor="status">Status</FieldLabel>
