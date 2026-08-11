@@ -131,7 +131,7 @@ export default async function PlantDetailPage(
       <div className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold text-ink">Observations</h2>
         <ObservationForm action={createObservation.bind(null, plant.id)} />
-        <ObservationList observations={observations ?? []} />
+        <ObservationList plantId={plant.id} observations={observations ?? []} />
       </div>
 
       <div className="flex flex-col gap-3">

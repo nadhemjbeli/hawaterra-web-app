@@ -42,6 +42,26 @@ export async function createObservation(
   return { error: null };
 }
 
+export async function deleteObservation(
+  plantId: string,
+  observationId: string,
+): Promise<ObservationFormState> {
+  await requireAuthedUser();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("observation")
+    .delete()
+    .eq("id", observationId);
+
+  if (error) {
+    return { error: "Could not delete observation. Please try again." };
+  }
+
+  revalidatePath(`/plants/${plantId}`);
+  return { error: null };
+}
+
 export type PhotoResult = { error: string | null };
 
 export async function recordPlantPhoto(
