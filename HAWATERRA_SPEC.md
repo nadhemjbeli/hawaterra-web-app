@@ -104,8 +104,8 @@ committed single-farm path. V0.7/V0.8 are a separate, explicitly
   data source only.
 - **V0.1B — IoT proof of concept**: one physical station (`STATION-001`,
   ESP32-based), temperature + humidity, authenticated POST ingestion,
-  latest local reading displayed. Currently blocked on the physical ESP32
-  hardware, not on software.
+  latest local reading displayed. The ESP32 upload and GPIO test has passed;
+  connecting and reading the temperature/humidity sensor is next.
 - **V0.2 — Environmental monitoring**: soil moisture, historical charts,
   device management, reliability improvements, and comparing local sensor
   readings against the V0.1A weather API baseline.
