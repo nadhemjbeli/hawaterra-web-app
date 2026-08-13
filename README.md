@@ -14,9 +14,11 @@ software before adding more features.
   private photo storage are implemented.
 - **V0.1A — External weather:** regional current conditions and forecast are
   implemented with Open-Meteo.
-- **V0.1B — IoT proof of concept:** `STATION-001` can be programmed and its
-  board/GPIO test passes. Connecting the temperature and humidity sensor is
-  next.
+- **V0.1B — IoT proof of concept:** `STATION-001`'s DHT22 temperature/
+  humidity sensor is wired, physically verified over Serial Monitor, and
+  its sketch is checked in. Not yet done: Wi-Fi, HTTP ingestion, and
+  Supabase storage — see
+  [firmware/station-001/README.md](firmware/station-001/README.md).
 
 See [HAWATERRA_SPEC.md](HAWATERRA_SPEC.md) for the product scope and roadmap,
 and [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design.
@@ -78,18 +80,22 @@ row-level security policies, and the private plant-photo storage setup.
 ## ESP32 development
 
 The firmware for the first station lives in `firmware/station-001/`. The
-current sketch is intentionally only a known-good board test; it does not yet
-contain Wi-Fi credentials or sensor code.
+checked-in sketch now reads the DHT22 temperature/humidity sensor and
+prints readings over serial — no Wi-Fi credentials or networking code
+committed yet. See
+[firmware/station-001/README.md](firmware/station-001/README.md) for the
+full status and the next planned steps.
 
 Open `firmware/station-001/station-001.ino` in Arduino IDE and use:
 
 - Board: **DOIT ESP32 DEVKIT V1**
 - Upload speed: **115200**
 - Serial Monitor: **115200 baud**
-- Port: the currently detected `/dev/ttyUSB*` or `/dev/ttyACM*` device
+- Port: the currently detected port (`/dev/ttyACM0` so far on this setup,
+  though it may vary — could also be `/dev/ttyUSB*`)
 
 If uploading pauses at `Connecting...`, hold **BOOT** until writing begins,
-then release it.
+then release it — a stable USB data cable matters here.
 
 ## Repository structure
 
