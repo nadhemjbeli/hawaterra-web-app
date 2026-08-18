@@ -147,6 +147,35 @@ current account. Two separate concerns, deliberately not conflated:
   hypothetical customer — exactly what the project's own decision rule
   (useful this week over impressive but complicated) warns against.
 
+## Portfolio / production readiness
+
+HAWATERRA is both a working farm tool and a professional portfolio piece
+(see Mission above). Tracking readiness for the second purpose explicitly
+here, since it's easy to keep extending the product and never close the
+loop on making the finished work visible to an outside reviewer.
+
+**Solid already**: an RLS-enforced ownership model with composite foreign
+keys, a computed and validated (not eyeballed) accessible color system, an
+isolated external-API integration pattern (Open-Meteo), real security
+discipline (no service-role key ever in client code, scoped ingestion keys
+planned for IoT), and documentation (`ARCHITECTURE.md`, this file,
+per-component READMEs) a reviewer can actually read without asking.
+
+**Gaps, in priority order**:
+1. No live deployment — the app only runs locally/on the LAN. Highest
+   priority: nothing else here matters to an outside reviewer if there's
+   no link to click.
+2. No visual hook in `README.md` (screenshots, a short demo clip) —
+   reviewers skim images before prose.
+3. The IoT pipeline (`STATION-001`) is mid-proof-of-concept — a strong
+   story once it reaches sensor → cloud → live reading, a weaker one
+   half-finished.
+4. No automated tests and no CI (lint/build on push) — cheap to add,
+   signals process discipline.
+
+This section tracks readiness, not product scope — it doesn't gate or
+reorder the V0.1–V0.8 roadmap above.
+
 ## Explicit scope boundaries
 
 Not implemented, and not to be implemented ahead of the roadmap above:
